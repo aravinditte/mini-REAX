@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: relayer-deployment }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: relayer } }
+  template:
+    metadata: { labels: { app: relayer } }
+    spec:
+      containers:
+        - name: relayer
+          image: myregistry/reax-relayer:latest
+          env:
+            - name: GOERLI_RPC_URL
+              valueFrom: { secretKeyRef: { name: env-secrets, key: goerliRpc } }
+            - name: MUMBAI_RPC_URL
+              valueFrom: { secretKeyRef: { name: env-secrets, key: mumbaiRpc } }
+            - name: PRIVATE_KEY
+              valueFrom: { secretKeyRef: { name: env-secrets, key: privateKey } }
+            - name: BRIDGE_ETH_ADDRESS
+              value: "0x..."
+            - name: BRIDGE_POLY_ADDRESS
+              value: "0x..."
