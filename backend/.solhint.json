@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "compiler-version": ["error", "^0.8.0"],
+    "func-visibility": ["warn", {"ignoreConstructors": true}],
+    "no-console": "error",
+    "not-rely-on-time": "error",
+    "avoid-throw": "warn",
+    "avoid-sha3": "warn",
+    "mark-callable-contracts": "warn",
+    "no-complex-fallback": "error",
+    "no-inline-assembly": "error",
+    "no-empty-blocks": "warn",
+    "no-unused-vars": "error"
+  }
+}
