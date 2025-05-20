@@ -15,9 +15,9 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
   });
 
   const sUSD = await deploy("SyntheticToken", {
-    from: deployer,
-    args: ["Synthetic USD", "sUSD"],
-  });
+  from: deployer,
+  args: ["Synthetic USD", "sUSD", deployer], // Add initial owner
+});
 
   const collateralManager = await deploy("CollateralManager", {
     from: deployer,

@@ -2,8 +2,9 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract TokenBridge {
+contract TokenBridge is Ownable {
     IERC20 public immutable token;
     uint256 public chainId;
     mapping(bytes32 => bool) public processedTransactions;
@@ -11,7 +12,7 @@ contract TokenBridge {
     event TokensBridged(address indexed sender, uint256 amount, uint256 targetChain);
     event TokensReceived(address indexed recipient, uint256 amount, uint256 sourceChain);
 
-    constructor(address _token) {
+    constructor(address _token) Ownable(msg.sender) {
         token = IERC20(_token);
         chainId = block.chainid;
     }
@@ -21,7 +22,7 @@ contract TokenBridge {
         emit TokensBridged(msg.sender, amount, targetChain);
     }
 
-    function receiveTokens(address recipient, uint256 amount, uint256 sourceChain, bytes32 txHash) external {
+    function receiveTokens(address recipient, uint256 amount, uint256 sourceChain, bytes32 txHash) external onlyOwner {
         require(!processedTransactions[txHash], "Already processed");
         processedTransactions[txHash] = true;
         token.transfer(recipient, amount);

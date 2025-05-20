@@ -12,7 +12,7 @@ contract CollateralManager is Ownable {
         mapping(address => uint256) syntheticBalances;
     }
     
-    uint256 public constant COLLATERAL_RATIO = 150; // 150%
+    uint256 public constant COLLATERAL_RATIO = 150;
     address public immutable usdcToken;
     
     SyntheticToken public syntheticUSD;
@@ -34,7 +34,7 @@ contract CollateralManager is Ownable {
         address _sUSD,
         address _sETH,
         address _sBTC
-    ) {
+    ) Ownable(msg.sender) {
         usdcToken = _usdc;
         ethPriceFeed = AggregatorV3Interface(_ethPriceFeed);
         btcPriceFeed = AggregatorV3Interface(_btcPriceFeed);
@@ -57,7 +57,6 @@ contract CollateralManager is Ownable {
         emit SyntheticMinted(msg.sender, syntheticToken, amount);
     }
 
-    // Additional helper functions and security checks
     function _checkCollateralRatio(address user, address syntheticToken, uint256 amount) internal view returns (bool) {
         uint256 totalCollateralValue = _calculateCollateralValue(user);
         uint256 syntheticValue = _calculateSyntheticValue(syntheticToken, amount);
@@ -67,7 +66,7 @@ contract CollateralManager is Ownable {
     function _calculateCollateralValue(address user) internal view returns (uint256) {
         (, int256 ethPrice,,,) = ethPriceFeed.latestRoundData();
         return (positions[user].ethCollateral * uint256(ethPrice)) / 1e8 +
-               (positions[user].usdcCollateral * 1e12); // USDC 6 decimals to 18
+               (positions[user].usdcCollateral * 1e12);
     }
 
     function _calculateSyntheticValue(address syntheticToken, uint256 amount) internal view returns (uint256) {
@@ -75,7 +74,7 @@ contract CollateralManager is Ownable {
             (, int256 btcPrice,,,) = btcPriceFeed.latestRoundData();
             return (amount * uint256(btcPrice)) / 1e8;
         }
-        return amount; // sUSD and sETH are 1:1 with USD
+        return amount;
     }
 
     function _isValidSynthetic(address token) internal view returns (bool) {

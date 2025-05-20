@@ -7,7 +7,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract SyntheticToken is ERC20, Ownable {
     address public collateralManager;
 
-    constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
+    constructor(
+        string memory name, 
+        string memory symbol,
+        address initialOwner
+    ) ERC20(name, symbol) Ownable(initialOwner) {}
 
     modifier onlyCollateralManager() {
         require(msg.sender == collateralManager, "Unauthorized");

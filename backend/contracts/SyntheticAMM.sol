@@ -2,16 +2,17 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract SyntheticAMM {
+contract SyntheticAMM is ReentrancyGuard {
     address public token0;
     address public token1;
     uint256 public reserve0;
     uint256 public reserve1;
     uint256 public totalSupply;
     
-    mapping(address => uint256) public liquidity;
-
+    mapping(address => uint256) public liquidityBalances;
+    
     event Swap(address indexed user, address tokenIn, uint256 amountIn, uint256 amountOut);
     event LiquidityAdded(address indexed provider, uint256 amount0, uint256 amount1);
     event LiquidityRemoved(address indexed provider, uint256 amount0, uint256 amount1);
@@ -21,7 +22,7 @@ contract SyntheticAMM {
         token1 = _token1;
     }
 
-    function addLiquidity(uint256 amount0, uint256 amount1) external {
+    function addLiquidity(uint256 amount0, uint256 amount1) external nonReentrant {
         IERC20(token0).transferFrom(msg.sender, address(this), amount0);
         IERC20(token1).transferFrom(msg.sender, address(this), amount1);
         
@@ -29,7 +30,7 @@ contract SyntheticAMM {
         emit LiquidityAdded(msg.sender, amount0, amount1);
     }
 
-    function swap(address tokenIn, uint256 amountIn) external returns (uint256 amountOut) {
+    function swap(address tokenIn, uint256 amountIn) external nonReentrant returns (uint256 amountOut) {
         require(tokenIn == token0 || tokenIn == token1, "Invalid token");
         
         (uint256 reserveIn, uint256 reserveOut) = tokenIn == token0 
@@ -58,7 +59,7 @@ contract SyntheticAMM {
             );
         }
         
-        liquidity[to] += liquidity;
+        liquidityBalances[to] += liquidity;
         totalSupply += liquidity;
         return liquidity;
     }
