@@ -23,12 +23,14 @@ contract SyntheticAMM is ReentrancyGuard {
     }
 
     function addLiquidity(uint256 amount0, uint256 amount1) external nonReentrant {
-        IERC20(token0).transferFrom(msg.sender, address(this), amount0);
-        IERC20(token1).transferFrom(msg.sender, address(this), amount1);
-        
-        uint256 liquidity = _mint(msg.sender, amount0, amount1);
-        emit LiquidityAdded(msg.sender, amount0, amount1);
-    }
+    IERC20(token0).transferFrom(msg.sender, address(this), amount0);
+    IERC20(token1).transferFrom(msg.sender, address(this), amount1);
+    
+    // Remove unused variable assignment
+    _mint(msg.sender, amount0, amount1);
+    emit LiquidityAdded(msg.sender, amount0, amount1);
+}
+
 
     function swap(address tokenIn, uint256 amountIn) external nonReentrant returns (uint256 amountOut) {
         require(tokenIn == token0 || tokenIn == token1, "Invalid token");
@@ -46,23 +48,23 @@ contract SyntheticAMM is ReentrancyGuard {
         emit Swap(msg.sender, tokenIn, amountIn, amountOut);
     }
 
-    function _mint(address to, uint256 amount0, uint256 amount1) internal returns (uint256) {
-        uint256 _totalSupply = totalSupply;
-        uint256 liquidity;
-        
-        if (_totalSupply == 0) {
-            liquidity = sqrt(amount0 * amount1);
-        } else {
-            liquidity = min(
-                (amount0 * _totalSupply) / reserve0,
-                (amount1 * _totalSupply) / reserve1
-            );
-        }
-        
-        liquidityBalances[to] += liquidity;
-        totalSupply += liquidity;
-        return liquidity;
+    function _mint(address to, uint256 amount0, uint256 amount1) internal {
+    uint256 _totalSupply = totalSupply;
+    uint256 liquidity;
+    
+    if (_totalSupply == 0) {
+        liquidity = sqrt(amount0 * amount1);
+    } else {
+        liquidity = min(
+            (amount0 * _totalSupply) / reserve0,
+            (amount1 * _totalSupply) / reserve1
+        );
     }
+    
+    liquidityBalances[to] += liquidity;
+    totalSupply += liquidity;
+}
+
 
     function sqrt(uint256 y) internal pure returns (uint256 z) {
         if (y > 3) {
