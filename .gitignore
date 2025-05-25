@@ -3,3 +3,5 @@ backend/artifacts
 backend/cache
 backend/.env
 .env
+relayer/Cargo.lock
+relayer/target
