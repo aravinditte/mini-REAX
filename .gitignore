@@ -5,3 +5,5 @@ backend/.env
 .env
 relayer/Cargo.lock
 relayer/target
+frontend/node_modules
+frontend/.env
