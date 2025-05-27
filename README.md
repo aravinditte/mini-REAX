@@ -34,3 +34,5 @@ npx hardhat node
 Keep this terminal running. You'll see 20 demo accounts with 10,000 ETH each.
 
 ### 4. Deploy Contracts (New Terminal)
+
+xyz
